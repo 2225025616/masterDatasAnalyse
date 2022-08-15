@@ -2,7 +2,7 @@
 """
 Created on Mon Aug  8 15:41:00 2022
 
-@author: Administrator
+@author: Sunyali
 """
 
 # 读取label存的txt文件数据
@@ -11,7 +11,6 @@ Created on Mon Aug  8 15:41:00 2022
 def readSpecInfo(fileName):
     time = []
     ctwl = []
-    fwhm = []
     specInfo = []
     with open(fileName) as f:
         fDatas = f.readlines()
@@ -21,16 +20,16 @@ def readSpecInfo(fileName):
     # print(fDatas[0])
     time = [i[0]+' '+i[1] for i in fDatas]
     ctwl = [i[2] for i in fDatas]
-    fwhm = [i[3] for i in fDatas]
     specInfo = [i[4:] for i in fDatas]
     # print('txtfile name: ', len(fDatas))
     # print('txtfile name: ', time[0])
     # print('txtfile name: ', specInfo[0])
     # print('txtfile name: ', ctwl[0])
     # print('txtfile name: ', fwhm[0])
-    return time, ctwl, fwhm, specInfo
+    return time, ctwl, specInfo
     
 
 
 # 测试 
-data = readSpecInfo("../../DataSource/RFBG-PolyimideSMF28E/20220730/003.txt") 
+# data = readSpecInfo("../../DataSource/RFBG-PolyimideSMF28E/20220730/003.txt") 
+# print(data)

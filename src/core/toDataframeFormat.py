@@ -11,75 +11,101 @@ Created on Tue Aug  9 13:55:53 2022
 # 该寻峰使用比较算法
 
 import pandas as pd
+# 循环读文件夹下的文件
 from repeatReadFiles import repeatFiles
-from readRByOSA import readRDatas
+# 读取光谱仪透射、反射数据
+from readOsa import readDatas
 from readTByOSA import readTDatas
-from findNotch import findNotch
-from findThresh import findThresh
+from readRByOSA import readRDatas
+# 读取温度特性实验--解调仪的数据
 from readTxtofModem import readText
+# 读取热电偶的数据
 from readTxtofTemp import readTempToCav
+# 读取label存的光谱仪的数据
+from readTxtOfLabel import readSpecInfo
 
 
+
+# 读全过程的透射数据
 def transTDatas(dirName):
     # 循环读csv文件
     csvTFiles = repeatFiles(dirName, 'CSV')
-    # 循环读DT8文件
-    dt8TFiles = repeatFiles(dirName, 'DT8')
-    
-    dataT = pd.DataFrame(columns=('ctwl/nm','transmissionDepth/dB', 'r/%', 'n_ac','n_dc'))
+   
+    tDataInfo = pd.DataFrame(columns=('time', 'ctwl/nm','transmissionDepth/dBm'))
     # 建立临时数组变量
-    ctwlData = []
-    peakData = []
-    rData = []
-    n_ac_Data = []
+    ctwlDatas = []
+    peakDatas = []
+    timeData = []
+    # n_ac_Data = []
     # n_dc_Data = []
     # 对透射文件遍历，拟合得到中心波长、透射深度、反射率、NAC、NDC
     for i,file in enumerate(csvTFiles):
         # print(file)
-        data = readTDatas(dt8TFiles[i], csvTFiles[i])
-        data = findNotch(data)
+        data = readTDatas(csvTFiles[i])
         # print('ttttttTTTTTTTTTTTTTTT')
         # print(data)
-        ctwlData.append(data[0])
-        peakData.append(data[1])
-        rData.append(data[2])
-        n_ac_Data.append(data[3])
+        ctwlDatas.extend(data[0])
+        peakDatas.extend(data[1])
+        timeData.append(data[2])
         
-    dataT['ctwl/nm'] = ctwlData
-    dataT['transmissionDepth/dB'] = peakData
-    dataT['r/%'] = rData
-    dataT['n_ac'] = n_ac_Data
-    return dataT
+    tDataInfo['ctwl/nm'] = ctwlDatas
+    tDataInfo['transmissionDepth/dBm'] = peakDatas
+    tDataInfo['time'] = timeData
+    # dataT['n_ac'] = n_ac_Data
+    
+    return tDataInfo
 
 
+# 读取全过程的反射数据
 def transRDatas(dirName):
     # 循环读csv文件
     csvRFiles = repeatFiles(dirName, 'CSV')
-    # 循环读DT8文件
-    dt8RFiles = repeatFiles(dirName, 'DT8')
     
-    dataR = pd.DataFrame(columns=('ctwl/nm','peak/dB')) 
+    dataR = pd.DataFrame(columns=('time', 'ctwl/nm','peak/dBm')) 
     # 建立临时数组变量
-    ctwlData = []
-    peakData = []
+    ctwlDatas = []
+    peakDatas = []
+    timeData = []
     # 对反射文件遍历，拿到中心波长和峰值
     for i,file in enumerate(csvRFiles):
-        data = list(readRDatas(dt8RFiles[i], csvRFiles[i]))
+        data = list(readRDatas(csvRFiles[i]))
         # print(data)
-        # ctwlData.append(data[2])
-        # peakData.append(abs(data[3]))
+        ctwlDatas.extend(data[0])
+        peakDatas.extend(abs(data[1]))
+        timeData.append(data[2])
+         
         
-        data = findThresh(data)
-        ctwlData.append(data[0])
-        peakData.append(abs(data[1]))
-        break
-        
-    dataR['ctwl/nm'] = ctwlData
-    dataR['peak/dB'] = peakData
-    # print(datasR)
+    dataR['ctwl/nm'] = ctwlDatas
+    dataR['transmissionDepth/dBm'] = peakDatas
+    dataR['time'] = timeData
     return dataR
 
 
+# 读取label存的光谱仪OSA数据
+def transRegenerateDatas(dirName):
+    # 循环读txt文件
+    csvRFiles = repeatFiles(dirName, 'txt')
+    
+    datas = pd.DataFrame(columns=('time', 'ctwl/nm','peak/dBm')) 
+    # 建立临时数组变量
+    ctwlDatas = []
+    specInfo = []
+    timeData = []
+    # 对反射文件遍历，拿到中心波长和峰值
+    for i,file in enumerate(csvRFiles):
+        data = list(readSpecInfo(csvRFiles[i]))
+        # print(data)
+        ctwlDatas.extend(data[1])
+        specInfo.extend(data[2])
+        timeData.extend(data[0])
+         
+        
+    datas['ctwl/nm'] = ctwlDatas
+    datas['transmissionDepth/dBm'] = specInfo
+    datas['time'] = timeData
+    return datas
+
+# 读取温度特性实验过程的数据
 def transTempDatas(dirName):
     # 循环读txt文件
     txtFiles = repeatFiles(dirName, 'txt')
@@ -100,6 +126,7 @@ def transTempDatas(dirName):
     return dataTemp
 
 
+# 读取热电偶数据——温度时间
 def transTempTime(txtFile, tstFile):
     data = readTempToCav(txtFile, tstFile)
     datas = pd.DataFrame(columns=('time','temperature'))

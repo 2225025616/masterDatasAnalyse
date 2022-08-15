@@ -45,12 +45,26 @@ def readRDatas(csvName):
     for data in specDatas:
         wlData.append(eval(data[0].split(',')[0]))
         peakData.append(eval(data[0].split(',')[1]))
-        
+    
+    peak =max(peakData)
+    # print(peaks)
+    # print('notch: ',notch)
+    # print('peaks len: ',len(peaks))
+    # print('*****')
+    index = peakData.index(peak)
+    ctwl = wlData[peakData.index(peak)]
+    
+    startIndex = index-125 if index-125>0 else 0
+    endIndex = index+125 if index+125<len(wlData) else len(wlData)
+    wlData = wlData[startIndex:endIndex]
+    peakData = peakData[startIndex:endIndex]
+    
+    # print('ctwl: ',ctwl)
+    # print('notch : ', notch)
+    
     f_time = os.path.getmtime(csvName)
     fTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(f_time))
-    
     return wlData, peakData, fTime
-    
 
 
 

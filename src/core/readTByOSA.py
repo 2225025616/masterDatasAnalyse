@@ -18,10 +18,18 @@ Created on Mon Aug  8 15:23:01 2022
     # 利用透射光谱的光强信息dbm的绝对值，找到波峰——即实际光谱的波谷
     # 利用波谷的索引——左右各找125个点
 
-# 得到对应的光源光谱数据
+# 得到对应的光源光谱数据___——————拿到所有的光谱信息，根据温度判断大概范围在选取数据段
     # 找到适合高斯拟合的数据段
-import math
-from scipy.signal import find_peaks
+# import math
+# from scipy.signal import find_peaks
+
+
+# 去基线
+# 小波变换
+# 原曲线—去基线后的曲线=新曲线
+# 在新曲线找极值点，找范围
+# 再根据极值点找索引，找需要的范围
+
 import os
 import time
 
@@ -59,23 +67,19 @@ def readTDatas(csvName):
     # 根据中心波长数值截取数据段
     # 根据波谷值，找附近的光谱信息
     
-    # yData = [abs(i) for i in peakData]
-    # prop, peak_heights = find_peaks(yData, height=0.7)
-    # print(prop)
-    # print(peak_heights)
-    # peaks = peak_heights['peak_heights']
-    # notch = 0- max(peaks)
+    
+    notch =min(peakData)
     # print(peaks)
     # print('notch: ',notch)
     # print('peaks len: ',len(peaks))
     # print('*****')
-    # index = peakData.index(notch)
-    # ctwl = wlData[peakData.index(notch)]
+    index = peakData.index(notch)
+    ctwl = wlData[peakData.index(notch)]
     
-    # startIndex = index-125 if index-125>0 else 0
-    # endIndex = index+125 if index+125<len(wlData) else len(wlData)
-    # wlData = wlData[startIndex:endIndex]
-    # peakData = peakData[startIndex:endIndex]
+    startIndex = index-125 if index-125>0 else 0
+    endIndex = index+125 if index+125<len(wlData) else len(wlData)
+    wlData = wlData[startIndex:endIndex]
+    peakData = peakData[startIndex:endIndex]
     
     # print('ctwl: ',ctwl)
     # print('notch : ', notch)
