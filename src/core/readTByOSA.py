@@ -6,116 +6,87 @@ Created on Mon Aug  8 15:23:01 2022
 """
 
 # 读取光谱仪的数据
+
+# DT8文件分析无效， 删除对DT8文件的分析和数据处理
 # DT8文件中有保存的带宽、半宽高，拿到半宽高
+
 # CSV文件中有光谱数据，拿到光谱
 # 获得光谱的所有信息——波长及能量
-# 得到对应的光源光谱数据
-# 找到适合高斯拟合的数据段
-import math
 
-def readTDatas(dt8Name, csvName):
-    # DT8文件
-    fwhm = 0
-    fileData = []
-    print('dt8 file name : ',  dt8Name)
-    with open(dt8Name) as f:
-        if dt8Name.split('/')[-1].startswith('D'):
-            # print('222')
-            fileData = list(map(lambda x: x.strip().split('\n'), f.readlines()))
-            # print('fileData: ', fileData)
-            data = fileData[4]
-            # print('data: ',data)
-            # print(fileData[5][0].strip(' ').split(' ')[-1])
-            fwhm = eval(data[0].strip(' ').split(' ')[-1][0:6])
-    f.close()
-   
-       
+# 个别光谱透射深度并不是最小的值
     
+    # 利用透射光谱的光强信息dbm的绝对值，找到波峰——即实际光谱的波谷
+    # 利用波谷的索引——左右各找125个点
+
+# 得到对应的光源光谱数据
+    # 找到适合高斯拟合的数据段
+import math
+from scipy.signal import find_peaks
+import os
+import time
+
+def readTDatas(csvName):
     
     # CSV 文件
-    print('csvName: ',csvName)
+    # 拿到光谱信息
+    # print('csvName: ',csvName)
     specDatas = []
-    ctwl=0
-    notch=0
-    r=0
-    n_ac=0
-    n_dc=0
     with open(csvName) as f:
         if csvName.split('/')[-1].startswith('W'):
+            # csvDatas =f.readlines()
             csvDatas = list(map(lambda x: x.strip().split('\n'), f.readlines()))
             # 拿到光谱数据
-            specDatas = csvDatas[39:-1]
             
-         # 处理光谱数据，各放到一个数组中
-        peakData = []
-        wlData = []
-        
-        
-        # print('spec info *********')
-        # print(specDatas)
-        for wl in specDatas:
-            wlData.append(eval(wl[0].split(',')[0]))
-            peakData.append(eval(wl[0].split(',')[1]))
-        # print('*****')
-        # print(wlData)
-        # print(wlData[-1]-wlData[0])
-        # print("specDatas")
-        # print(len(wlData))
-        # 高斯拟合预备工作，得到某一文件的中心波长和透射深度 他们附近的数值取出来
-       
-        # 根据中心波长数值截取数据段
-        # 根据波谷值，找附近的光谱信息
-        ctwl = wlData[peakData.index(min(peakData))]
-        # index = peakData.index(min(peakData))
-        # peak = min(peakData)
-        
-        print(ctwl+1)
-        start = ctwl-0.5 if ctwl-0.5>wlData[0] else wlData[0]
-        end = ctwl+0.5 if ctwl+0.5<wlData[-1] else wlData[-1]
-        # 得到附近的索引值
-        startIndex = wlData.index(start)
-        endIndex = wlData.index(end)
-        
-        # startIndex = 0 if index-oneDBdic<0 else index-oneDBdic
-        # endIndex = index+oneDBdic+1 if index+oneDBdic+1<len(wlData) else len(wlData)
-        
-        wlData = wlData[startIndex:endIndex]
-        peakData = peakData[startIndex:endIndex]
-        
-        print('ctwl: ',ctwl)
-        # 参考值
-        # print(min(peakData))
-        # print(startIndex)
-        # print(endIndex)
-        # print(index)
-        ref = sum(peakData[0:5])/5
-        print(ref)
-        # notch = min(peakData)-ref
-        notch = min(peakData)
-        # print(notch)
-        print('notch : ', notch)
-        # print(math.pow(10, notch/10))
-        r = 1 - abs(math.pow(10, notch/10))
-        overlapFactor = 0.8
-        # print('r: ', r)
-        # print(math.sqrt(r))
-        a = math.sqrt(r) if math.sqrt(r)<0.99 else 0.99
-        # print(math.atanh(a))
-        # print(math.atanh(a)*ctwl)
-        n_ac = math.atanh(a)*ctwl/(overlapFactor*math.pi*float(12)*10**6)
-        n_dc = 1.456/(overlapFactor*ctwl)
-        # print('反射率：', r)
-        # print('平均折射率：',n_ac)
-        # print('dc: ', n_dc)
-    f.close()
+            specDatas = csvDatas[39:-1]
+    f.close()    
     
+     # 处理光谱数据，各放到一个数组中
+    peakData = []
+    wlData = []
+    ctwl=0
+    notch=0
+    
+    
+    print('spec info *********')
+    # print(specDatas)
+    for wl in specDatas:
+        wlData.append(eval(wl[0].split(',')[0]))
+        peakData.append(eval(wl[0].split(',')[1]))
+    
+    
+    # # 高斯拟合预备工作，得到某一文件的中心波长和透射深度 他们附近的数值取出来
    
-    return wlData, peakData, ctwl, notch, r, n_ac, n_dc
+    # # 根据中心波长数值截取数据段
+    # # 根据波谷值，找附近的光谱信息
+    # yData = [abs(i) for i in peakData]
+    # prop, peak_heights = find_peaks(yData, height=0.7)
+    # print(prop)
+    # print(peak_heights)
+    # peaks = peak_heights['peak_heights']
+    # notch = 0- max(peaks)
+    # print(peaks)
+    # print('notch: ',notch)
+    # print('peaks len: ',len(peaks))
+    # print('*****')
+    # index = peakData.index(notch)
+    # ctwl = wlData[peakData.index(notch)]
+    
+    # startIndex = index-125 if index-125>0 else 0
+    # endIndex = index+125 if index+125<len(wlData) else len(wlData)
+    # wlData = wlData[startIndex:endIndex]
+    # peakData = peakData[startIndex:endIndex]
+    
+    # print('ctwl: ',ctwl)
+    # print('notch : ', notch)
+    
+    f_time = os.path.getmtime(csvName)
+    fTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(f_time))
+    return wlData, peakData, fTime
     
 
 
 
 
 # 测试
-dt = readTDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/D0000.DT8'    ,'../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0000.CSV')
-print(dt)
+dt = readTDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2234.CSV')
+# print(dt)

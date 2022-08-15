@@ -17,6 +17,7 @@ def findThresh(data, L=12):
     yData = data[1]
     print(data[2])
     print(data[3])
+    peak = 0
     y = [abs(i) for i in yData]
 #    根据光谱的能量进行高斯拟合
     y = np.array(y)
@@ -55,19 +56,18 @@ def findThresh(data, L=12):
     print('半宽={} ,波谷={}, 中心波长={}'.format(s, peak, ctWl))
     # 计算反射率、有效折射率
     # 并记下结果
-    r = 1 - abs(math.pow(10, -peak/10))
-    overlapFactor = 0.8
-    a = math.sqrt(r) if math.sqrt(r)<0.99 else 0.99
-    # print(math.sqrt(r))
-    # print(math.atanh(a))
-    # print(math.atanh(a)*ctWl)
-    n_ac = math.atanh(a)*ctWl/(overlapFactor*math.pi*float(L)*10**6)
-    n_dc = 1.456/(overlapFactor*ctWl)
+    # r = 1 - abs(math.pow(10, -peak/10))
+    # overlapFactor = 0.8
+    # a = math.sqrt(r) if math.sqrt(r)<0.99 else 0.99
+    # # print(math.sqrt(r))
+    # # print(math.atanh(a))
+    # # print(math.atanh(a)*ctWl)
+    # n_ac = math.atanh(a)*ctWl/(overlapFactor*math.pi*float(L)*10**6)
+    # n_dc = 1.456/(overlapFactor*ctWl)
     # print('反射率：', r)
     # print('平均折射率：',n_ac)
     # print('dc: ', n_dc)
-    return ctWl, peak, r, n_ac, n_dc
-
+    return ctWl, peak
 
 
 
