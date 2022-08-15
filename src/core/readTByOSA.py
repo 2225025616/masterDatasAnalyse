@@ -43,8 +43,8 @@ def readTDatas(csvName):
      # 处理光谱数据，各放到一个数组中
     peakData = []
     wlData = []
-    ctwl=0
-    notch=0
+    # ctwl=0
+    # notch=0
     
     
     print('spec info *********')
@@ -54,10 +54,11 @@ def readTDatas(csvName):
         peakData.append(eval(wl[0].split(',')[1]))
     
     
-    # # 高斯拟合预备工作，得到某一文件的中心波长和透射深度 他们附近的数值取出来
+    # 高斯拟合预备工作，得到某一文件的中心波长和透射深度 他们附近的数值取出来
    
-    # # 根据中心波长数值截取数据段
-    # # 根据波谷值，找附近的光谱信息
+    # 根据中心波长数值截取数据段
+    # 根据波谷值，找附近的光谱信息
+    
     # yData = [abs(i) for i in peakData]
     # prop, peak_heights = find_peaks(yData, height=0.7)
     # print(prop)
@@ -88,5 +89,5 @@ def readTDatas(csvName):
 
 
 # 测试
-dt = readTDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2234.CSV')
+# dt = readTDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2234.CSV')
 # print(dt)

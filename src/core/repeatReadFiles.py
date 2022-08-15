@@ -16,7 +16,7 @@ import os
 def repeatFiles(dirName, fileType):
     # 文件夹对象化
     # 遍历指定目录下所有文件,显示所有文件名
-
+    dirName = os.listdir(dirName)
     # 在文件夹下找到所有符合类型的文件名
     csvArr = []
     for i, path in enumerate(dirName):

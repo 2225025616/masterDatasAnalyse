@@ -8,7 +8,7 @@ Created on Mon Aug  8 15:41:00 2022
 # 读取label存的txt文件数据
 # 时间、中心波长、带宽，光谱信息
 
-def readOsaInfo(fileName):
+def readSpecInfo(fileName):
     time = []
     ctwl = []
     fwhm = []
@@ -33,4 +33,4 @@ def readOsaInfo(fileName):
 
 
 # 测试 
-# data = readOsaInfo("../../DataSource/RFBG-PolyimideSMF28E/20220730/003.txt") 
+data = readSpecInfo("../../DataSource/RFBG-PolyimideSMF28E/20220730/003.txt") 
