@@ -12,9 +12,15 @@ Created on Sun Aug  7 20:35:12 2022
 import numpy as np
 import math
 
+# 利用波谷，左右+/-1的光谱信息
+# 高斯拟合
 def findNotch(data, L=12):
+    
     xData = data[0]
     yData = data[1]
+    
+    
+    
     ref = max(data[1])
     notch=min(data[1])
     ctwl=data[0][data[1].index(min(data[1]))]
@@ -74,12 +80,78 @@ def findNotch(data, L=12):
     return ctwl, notch, r, n_ac
 
 
+# 利用scipy的寻谷函数
+import scipy
+def findNotchByScipy(data, L=12):
+    readNotch = scipy.argelextrema()
+  
+    
+  
+    
+  
+    
+  
+    
+  
 
+
+from scipy.optimize import curve_fit
+from scipy import stats
+
+def gauss_function(x, a, x0, sigma):
+    return a*np.exp(-(x-x0)**2/(2*sigma**2))
+ 
+    
+def findK(xData, yData):
+    dic = len(xData)/2
+    print('KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK')
+    print(dic)
+    d=0
+    kArr = []
+    if d<dic:
+        k=[]
+        for i,data in enumerate(xData):
+            if i<len(xData)-d-1:
+                k.append((yData[i+d+1]-yData[i])/(xData[i+d+1]-xData[i]))
+        kArr.append(k)
+        # print(k)
+        d=d+1
+    return kArr
+
+def guss(data, L=12):
+    x = data[0]
+    y = data[1]
+    # 根据1dB带宽截取数据段
+    # # 找到波谷对应的波长
+    ctwl = x[y.index(min(y))]
+    index = y.index(min(y))
+    print('min index: ', index)
+    peak = min(y)
+    print(peak)
+    peak_1dB = peak+1
+    y_r = [abs(i-peak_1dB) for i in y[0:index]]
+    y_l = [abs(i-peak_1dB) for i in y[index:-1]]
+    r_index = y_r.rindex(min(y_r))
+    l_index = y_l.index(min(y_l))
+    
+    print(len(y_r))
+    print(len(y)/2)
+    print('r index: ',r_index)
+    print('l index: ',l_index)
+    d_1dB = min(r_index, l_index)
+    # 找到1dB所在的索引
+    y_1dB_datas = y[d_1dB,d_1dB+1]
+    # 一阶导数
+    kArr = findK(x, y)
+    print('!!!!!!!!!!!!!*****************!!!!!!!!!!!!!!!!!!!')
+    print(kArr)
+    print(len(kArr))
+    # popt, pcov = curve_fit(gauss_function, x, y, p0 = [1, mean, sigma])
 
 # 测试
 from readTByOSA import readTDatas
-osaDatas = readTDatas("../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/D0342.DT8", "../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W0342.CSV")
-findNotch(osaDatas)
+osaDatas = readTDatas("../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/D0302.DT8", "../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W0302.CSV")
+guss(osaDatas)
 
 
 

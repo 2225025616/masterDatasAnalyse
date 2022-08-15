@@ -16,11 +16,10 @@ import os
 def repeatFiles(dirName, fileType):
     # 文件夹对象化
     # 遍历指定目录下所有文件,显示所有文件名
-    pathes = os.listdir(dirName)
 
     # 在文件夹下找到所有符合类型的文件名
     csvArr = []
-    for i, path in enumerate(pathes):
+    for i, path in enumerate(dirName):
         # 文件按照时间顺序命名，文件名从大到小排列
         if path.find(fileType) > 0:
             csvArr.append(dirName + '/' +path)

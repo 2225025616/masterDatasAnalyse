@@ -88,4 +88,4 @@ def readRDatas(dt8Name, csvName):
 
 
 # 测试
-# readDataByOSA('..\\..\\DataSource\\RFBG-PolyimideSMF28E\\20220711\\regenerationOSA-R\\D0000.DT8','../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0000.CSV')
+readRDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-R/D0035.DT8','../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W0035.CSV')

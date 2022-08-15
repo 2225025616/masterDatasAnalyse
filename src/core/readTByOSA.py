@@ -62,25 +62,16 @@ def readTDatas(dt8Name, csvName):
         # print("specDatas")
         # print(len(wlData))
         # 高斯拟合预备工作，得到某一文件的中心波长和透射深度 他们附近的数值取出来
-        
-        ###
-        # 根据1dB带宽截取数据段
-        # # 根据半宽高的一半
-        # span = (wlData[-1]-wlData[0])/len(wlData)
-        # oneDBdic = int(fwhm//span//2)
-        # # 找到波谷对应的波长
-        ctwl = wlData[peakData.index(min(peakData))]
-        # # 找到峰值所在的索引
-        # index = peakData.index(min(peakData))
-        # # 根据峰值索引，半宽高——找到适合高斯拟合的数据段
-        ###
-        
-        
-        # 根据数值截取数据段
+       
+        # 根据中心波长数值截取数据段
         # 根据波谷值，找附近的光谱信息
+        ctwl = wlData[peakData.index(min(peakData))]
+        # index = peakData.index(min(peakData))
+        # peak = min(peakData)
+        
         print(ctwl+1)
-        start = ctwl-1 if ctwl-1>wlData[0] else wlData[0]
-        end = ctwl+1 if ctwl+1<wlData[-1] else wlData[-1]
+        start = ctwl-0.5 if ctwl-0.5>wlData[0] else wlData[0]
+        end = ctwl+0.5 if ctwl+0.5<wlData[-1] else wlData[-1]
         # 得到附近的索引值
         startIndex = wlData.index(start)
         endIndex = wlData.index(end)
