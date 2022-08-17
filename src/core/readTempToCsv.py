@@ -15,7 +15,7 @@ import time
 import pandas as pd
 import numpy as np
 
-def readTempToCav(txtFile, tstFile):
+def readTempToCsv(txtFile, tstFile):
     tempDatas = []
     timeDatas = []
     wlDatas = []
@@ -56,7 +56,7 @@ def readTempToCav(txtFile, tstFile):
     
 
 # 测试
-# datas = readTempToCav("../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/TEMP.txt", "../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/20220804RFBG.TST")
+# datas = readTempToCsv("../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/TEMP.txt", "../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/20220804RFBG.TST")
 # temp_time_datas = pd.DataFrame(columns=('time','temperature', 'min-wl', 'max-wl'))
 # temp_time_datas['time'] = datas[0]
 # temp_time_datas['temperature'] = datas[1]

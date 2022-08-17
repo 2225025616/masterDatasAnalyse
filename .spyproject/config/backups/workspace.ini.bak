@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['src\\core\\main.py', 'src\\core\\findNotch.py', 'src\\core\\findPeak.py', 'src\\core\\findRef.py', '202203\\process\\modulesCsv\\findPeak.py', 'src\\core\\readTByOSA.py', 'src\\core\\pickupSpec-Temp.py']
+recent_files = ['src\\bin\\pickupSpec-Temp.py', 'src\\core\\__init__.py', 'src\\core\\toDataframeFormat.py', 'src\\core\\main.py', 'src\\core\\readTempToCsv.py', 'src\\core\\readTByOSA.py', 'src\\core\\cwt.py']
 
 [main]
 version = 0.2.0
