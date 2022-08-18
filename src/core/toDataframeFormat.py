@@ -15,8 +15,8 @@ import pandas as pd
 from repeatReadFiles import repeatFiles
 # 读取光谱仪透射、反射数据
 from readOsa import readDatas
-from readTByOSA import readTDatas
-from readRByOSA import readRDatas
+# from readTByOSA import readTDatas
+# from readRByOSA import readRDatas
 # 读取温度特性实验--解调仪的数据
 from readTxtofModem import readText
 # 读取热电偶的数据
@@ -24,34 +24,45 @@ from readTxtofTemp import readTempToCav
 # 读取label存的光谱仪的数据
 from readTxtOfLabel import readSpecInfo
 
-
+# 去基线，拿到波谷及附近的点
+from delBaseline import delbaseine
+# 二次拟合，拿到透射相关的数据
+from calTDepth import calTInfo
 
 # 读全过程的透射数据
 def transTDatas(dirName):
     # 循环读csv文件
     csvTFiles = repeatFiles(dirName, 'CSV')
    
-    tDataInfo = pd.DataFrame(columns=('time', 'ctwl/nm','transmissionDepth/dBm'))
+    tDataInfo = pd.DataFrame(columns=('time', 'ctwl/nm','transmissionDepth/dB','reflection/%','n_ac','n_dc'))
     # 建立临时数组变量
     ctwlDatas = []
     peakDatas = []
     timeData = []
-    # n_ac_Data = []
-    # n_dc_Data = []
+    n_ac_Data = []
+    r_Data = []
     # 对透射文件遍历，拟合得到中心波长、透射深度、反射率、NAC、NDC
     for i,file in enumerate(csvTFiles):
         # print(file)
-        data = readTDatas(csvTFiles[i])
+        # 拿到光谱信息
+        spec_info = readDatas(csvTFiles[i])
+        notch_datas = delbaseine(spec_info)
+        data = calTInfo(notch_datas)
+        # return ctwl,t_depth,r,n_ac
         # print('ttttttTTTTTTTTTTTTTTT')
         # print(data)
-        ctwlDatas.extend(data[0])
-        peakDatas.extend(data[1])
-        timeData.append(data[2])
+        timeData.append(spec_info[2])
+        ctwlDatas.append(data[0])
+        peakDatas.append(data[1])
+        r_Data.append(data[2])
+        n_ac_Data.append(data[3])
+        # 'reflection/%','n_ac'
         
     tDataInfo['ctwl/nm'] = ctwlDatas
-    tDataInfo['transmissionDepth/dBm'] = peakDatas
+    tDataInfo['transmissionDepth/dB'] = peakDatas
     tDataInfo['time'] = timeData
-    # dataT['n_ac'] = n_ac_Data
+    tDataInfo['reflection/%'] = r_Data
+    tDataInfo['n_ac'] = n_ac_Data
     
     return tDataInfo
 
@@ -61,22 +72,20 @@ def transRDatas(dirName):
     # 循环读csv文件
     csvRFiles = repeatFiles(dirName, 'CSV')
     
-    dataR = pd.DataFrame(columns=('time', 'ctwl/nm','peak/dBm')) 
+    dataR = pd.DataFrame(columns=('time', 'ctwl/nm')) 
     # 建立临时数组变量
     ctwlDatas = []
-    peakDatas = []
     timeData = []
     # 对反射文件遍历，拿到中心波长和峰值
     for i,file in enumerate(csvRFiles):
-        data = list(readRDatas(csvRFiles[i]))
+        data = list(readDatas(csvRFiles[i]))
         # print(data)
-        ctwlDatas.extend(data[0])
-        peakDatas.extend(abs(data[1]))
+        #  wlData, peakData, fTime
+        ctwlDatas.append(data[0][data[1].index(max(data[1]))])
         timeData.append(data[2])
          
         
     dataR['ctwl/nm'] = ctwlDatas
-    dataR['transmissionDepth/dBm'] = peakDatas
     dataR['time'] = timeData
     return dataR
 
