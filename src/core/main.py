@@ -6,7 +6,7 @@ Created on Tue Aug  9 22:18:53 2022
 """
 
 # 操作文件，导出数据，写入指定的目录下
-from toDataframeFormat import transTDatas, transRDatas, transRegenerateDatas, transTempDatas, transTempTime
+from toDataframeFormat import transTDatas, transRDatas, transRegenerateDatas, transTempDatas, transTempTime, transRInfo
 
 #  20220711 实验数据导出
 datasT = transTDatas("../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T")

@@ -20,9 +20,11 @@ from readOsa import readDatas
 # 读取温度特性实验--解调仪的数据
 from readTxtofModem import readText
 # 读取热电偶的数据
-from readTxtofTemp import readTempToCav
+from readTempDatas import readTemp
 # 读取label存的光谱仪的数据
 from readTxtOfLabel import readSpecInfo
+# 读取BaseSpec存的反射光谱的数据
+from readCSVByModem import readInfo
 
 # 去基线，拿到波谷及附近的点
 from delBaseline import delbaseine
@@ -137,8 +139,35 @@ def transTempDatas(dirName):
 
 # 读取热电偶数据——温度时间
 def transTempTime(txtFile, tstFile):
-    data = readTempToCav(txtFile, tstFile)
+    data = readTemp(txtFile, tstFile)
     datas = pd.DataFrame(columns=('time','temperature'))
     datas['time'] = data[0]
     datas['temperature/℃'] = data[1]
     return datas
+
+# 读取BaseSpec解调仪保存的csv数据
+def transRInfo(dirName):
+    # 循环读csv文件
+    csvTFiles = repeatFiles(dirName, 'CSV')
+   
+    rDataInfo = pd.DataFrame(columns=('time', 'ctwl/nm','reflection/mv'))
+    # 建立临时数组变量
+    ctwlDatas = []
+    peakDatas = []
+    timeData = []
+    # 对csv文件遍历，拟合得到中心波长、反射光谱
+    for i,file in enumerate(csvTFiles):
+        # print(file)
+        # 拿到光谱信息
+        data = readInfo(csvTFiles[i])
+        # return ctwl, peak, fTime
+        timeData.append(data[2])
+        ctwlDatas.append(data[0])
+        peakDatas.append(data[1])
+       
+        
+    rDataInfo['ctwl/nm'] = ctwlDatas
+    rDataInfo['time'] = timeData
+    rDataInfo['reflection/mv'] = peakDatas
+    
+    return rDataInfo
