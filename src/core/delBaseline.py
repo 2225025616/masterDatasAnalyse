@@ -138,7 +138,7 @@ def delbaseine(data):
     x_final = []
     y_final = []
     for i,d in enumerate(iy1_abs):
-        if d>0.01:
+        if d>0.015:
             iy1_final.append(d)
             x_final.append(x[i])
             y_final.append(y[i])
@@ -153,11 +153,31 @@ def delbaseine(data):
     # plt.plot(x,y,'bo',label='prime')
     # plt.plot(x_final,y_final,'r*',label='final')
     # plt.title('interp-1-final')
-    
-    return x_final,y_final
-        
-
-
+  
+    notch = min(y_final)
+    m = y_final.index(min(y_final))
+    l = len(y_final)-y_final.index(min(y_final))
+    print('notch index')
+    print(l)
+    print(m)
+    i = m if m<l else l
+    wlData = x_final[m-i:m+i-1]
+    peakData = y_final[m-i:m+i-1]
+    print(len(x_final))
+    # 二次拟合
+    coef = np.polyfit(wlData, peakData, 2)
+    y_fit = np.polyval(coef, wlData)
+    plt.plot(wlData, peakData, 'k-')
+    plt.plot(wlData, y_fit, 'b.')
+    # 找出其中的峰值/对称点
+    if coef[0] != 0:
+        ctwl = -0.5 * coef[1] / coef[0]            
+        ctwl = round(ctwl, 2)        
+        plt.plot([ctwl]*5, np.linspace(min(peakData),max(peakData),5),'r--')
+        print('ctwl : ',ctwl)
+    else:
+        raise ValueError('Fail to fit.')
+    return x_final,y_final,ctwl,notch
 
 
 # 测试 
