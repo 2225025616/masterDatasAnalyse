@@ -74,7 +74,93 @@ def dwt(data):
     return wlData, peakData
     
     
+# #用样条插值
+# 间隔25个点，以25个点为一组，找最大、最小，得到两个数组————形成两个包络
+# 用1次样条，插值成5000个点————最大值-成上包罗；最小值成下包络
+# 上包罗+下包络/2 ————均值包络
+# 实际曲线-均值包络=波谷临近范围
+# 波谷临近范围的绝对值，再找临界点—阈值；找阈值以上的曲线索引————即得到波谷活跃段
+# 在波谷活跃段找最小值——波谷光强
+# 对波谷活跃段，进行二次你拟合——————光强和波长信息本来是高斯拟合，但是光谱仪得到的是光强单位是dbm——已经对光强进行lg运算
+# 二次拟合后，得到中心波长
+ 
+#进行样条差值
+import scipy.interpolate as spi
+
+def delbaseine(data):
+    x = data[0]
+    y = data[1]
+    print('x len: ', len(x))
+    x_max =[]
+    y_max =[]
+    x_min =[]
+    y_min =[]
+    i=0
+    step = 25
+    for i,d in enumerate(x):
+        # print(i)
+        if i*step+step<len(data[0]):
+            yM =max(y[i*step:i*step+step-1])
+            xM = x[i*step:i*step+step-1][y[i*step:i*step+step-1].index(yM)]
+            x_max.append(xM)
+            y_max.append(yM)
+            ym =min(y[i*step:i*step+step-1])
+            xm = x[i*step:i*step+step-1][y[i*step:i*step+step-1].index(ym)]
+            x_min.append(xm)
+            y_min.append(ym)
+  
+    
+    # print('len: ',x_max)
+    # print('len: ',y_max)
+    #进行一阶样条差值
+    ipo1_max=spi.splrep(x_max,y_max,k=1) #源数据点导入，生成参数
+    ipo1_min=spi.splrep(x_min,y_min,k=1) #源数据点导入，生成参数
+    iy1_max=spi.splev(x,ipo1_max) #根据观测点和样条参数，生成插值
+    iy1_min=spi.splev(x,ipo1_min) #根据观测点和样条参数，生成插值
+    
+    iy1_arg = (iy1_max+iy1_min)/2
+    #进行三次样条拟合
+    ipo3_max=spi.splrep(x_max,y_max,k=3) #源数据点导入，生成参数
+    ipo3_min=spi.splrep(x_min,y_min,k=3) #源数据点导入，生成参数
+    iy3_max=spi.splev(x,ipo3_max) #根据观测点和样条参数，生成插值
+    iy3_min=spi.splev(x,ipo3_min) #根据观测点和样条参数，生成插值
+    iy3_arg = (iy3_max+iy3_min)/2
+    
+    
+    iy1 = y - iy1_arg
+    iy3 = y - iy3_arg
+    
+    # 从图可看出1次样条插值更好
+    iy1_abs = abs(iy1)
+    
+    # 取阈值 0.1
+    iy1_final = []
+    x_final = []
+    y_final = []
+    for i,d in enumerate(iy1_abs):
+        if d>0.01:
+            iy1_final.append(d)
+            x_final.append(x[i])
+            y_final.append(y[i])
+            
+    ##作图
+    # plt.figure(figsize=(18,12))
+    # plt.plot(x,iy1_max,'r+',label='max')
+    # plt.plot(x,iy1_min,'go',label='min')
+    # plt.plot(x,iy1,'b+',label='interp1')
+    # plt.plot(x,iy1_abs,'k.',label='interp1-abs')
+    # plt.plot(x_final,iy1_final,'r+',label='interp1-abs')
+    # plt.plot(x,y,'bo',label='prime')
+    # plt.plot(x_final,y_final,'r*',label='final')
+    # plt.title('interp-1-final')
+    
+    return x_final,y_final
+        
+
+
+
+
 # 测试 
-from readOsa import readDatas
-dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2233.CSV')
-dwt(dt)
+# from readOsa import readDatas
+# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2233.CSV')
+# delbaseine(dt)
