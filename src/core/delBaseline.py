@@ -131,10 +131,9 @@ def delbaseine(data):
     iy1 = y - iy1_arg
     # iy3 = y - iy3_arg
     peaks = find_peaks_cwt(iy1, 0.2)
-    print(peaks)
-    iy1 = np.array(iy1)
-    x = np.array(x)
-    print(x[peaks])
+    # ym_i = iy1.index(min(iy1))
+    # print(list(peaks).index(ym_i))
+    
     # 从图可看出1次样条插值更好
     iy1_abs = abs(iy1)
     # print(iy1)
@@ -146,64 +145,71 @@ def delbaseine(data):
     
     # 阈值合理化
     y_abs = list(abs(iy1))
-    # threshold=(max(iy1_abs)-sum(y_abs)/len(y_abs))/10
+    threshold=max(iy1_abs)*0.2
     # print('threshold: ',threshold)
-    # for i,d in enumerate(iy1_abs):
-    #     if d>threshold:
-    #         # print(i)
-    #         # print(d)
-    #         iy1_final.append(d)
-    #         x_final.append(x[i])
-    #         y_final.append(y[i]+30)
+    for i,d in enumerate(iy1_abs):
+        if d>threshold:
+            # print(i)
+            # print(d)
+            iy1_final.append(d)
+            x_final.append(x[i])
+            y_final.append(y[i])
     
     
     # print(x_final)
     # print(y_final)      
     ##作图
-    plt.figure(figsize=(18,12))
+    # plt.figure(figsize=(18,12))
     # # 上包络
     # plt.plot(x,iy1_max+28,'r+',label='max')
     # 下包络
     # plt.plot(x,iy1_min + 28,'go',label='min')
     # 去基线
-    plt.plot(x,iy1,'b+',label='interp1')
-    plt.plot(x[peaks],iy1[peaks],'ro')
+    # plt.plot(x,iy1,'b+',label='interp1')
+    
+    # iy1 = np.array(iy1)
+    # x = np.array(x)
+    # print(x[peaks])
+    # plt.plot(x[peaks],iy1[peaks],'ro')
     # 把所有的都翻上去
     # plt.plot(x,iy1_abs,'r*',label='interp1-abs')
     # plt.plot(x_final,iy1_final,'r+',label='interp1-abs')
     # plt.plot(x,y,'bo',label='prime')
-    plt.plot(x_final,y_final,'k*',label='final')
-    plt.title('interp-1-final')
+    # plt.plot(x_final,y_final,'r*',label='final')
+    # plt.title('interp-1-final')
   
-    notch = min(y_final)
-    m = y_final.index(min(y_final))
-    l = len(y_final)-y_final.index(min(y_final))
-    print('notch: ', notch)
-    print('notch index')
-    print(l)
-    print(m)
-    i = m if m<l else l
-    print(i)
-    wlData = x_final[m-i:m+i+1]
-    peakData = y_final[m-i:m+i+1]
-    print(len(wlData))
+   
     # 二次拟合
-    coef = np.polyfit(wlData, peakData, 2)
-    y_fit = np.polyval(coef, wlData)
-    # plt.plot(wlData, peakData, 'k-')
-    # plt.plot(wlData, y_fit, 'b.')
+    coef = np.polyfit(x_final, y_final, 2)
+    y_fit = np.polyval(coef, x_final)
+    # plt.plot(x_final, y_final, 'k-')
     # 找出其中的峰值/对称点
     if coef[0] != 0:
         ctwl = -0.5 * coef[1] / coef[0]            
-        ctwl = round(ctwl, 4)        
-        # plt.plot([ctwl]*5, np.linspace(min(peakData),max(peakData),5),'g--')
-        print('ctwl : ',ctwl)
+        ctwl = round(ctwl, 4) 
+        # plt.plot(x_final, y_fit, 'b.')       
+        # plt.plot([ctwl]*5, np.linspace(min(y_final),max(y_final),5),'g--')
+        # print('ctwl : ',ctwl)
     else:
         raise ValueError('Fail to fit.')
+        
+        
+    notch = min(y)
+    wl = x[y.index(min(y_final))]
+    # print('notch: ', notch)
+    # print('notch index')
+    l = x.index(wl-1) if wl-1>x[0] else 0
+    r = x.index(wl+1) if wl+1<x[-1] else -1
+    # print(l)
+    # print(r)
+    # print(i)
+    wlData = x[l:r]
+    peakData = y[l:r]
+    # print(len(wlData))
     return wlData,peakData,ctwl,notch
 
 
 # 测试 
-from readOsa import readDatas
-dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0154.CSV')
-delbaseine(dt)
+# from readOsa import readDatas
+# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0154.CSV')
+# delbaseine(dt)
