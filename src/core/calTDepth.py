@@ -16,13 +16,13 @@ def calTInfo(data, L=12):
     ctwl = data[2]
     notch = data[3]
     index = y.index(notch)
-    # print('xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx')
+    print('xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx')
     # print('notch: ',notch)
     y_10_l = y[0:index]
     y_10_r = y[index:-1]
     dy_10_l=[]
     dy_10_r=[]
-    step = 7
+    step = len(y)//6
     y_10_l.reverse()
     for i,yi in enumerate(y_10_l):
         if i*step+step<len(y_10_l):
@@ -78,7 +78,7 @@ def calTInfo(data, L=12):
 
 # 测试 
 # from readOsa import readDatas
-# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2233.CSV')
+# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0003.CSV')
 # from delBaseline import delbaseine
 # data = delbaseine(dt)
 # dd = calTInfo(data)

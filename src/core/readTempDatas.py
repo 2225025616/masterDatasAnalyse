@@ -46,5 +46,5 @@ def readTemp(txtFile, tstFile):
     
  
 # 测试 
-data = readTemp("../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/TEMP.txt", "../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/20220804RFBG.TST") 
-print(data[0][232])
+# data = readTemp("../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/TEMP.txt", "../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/20220804RFBG.TST") 
+# print(data[0][232])

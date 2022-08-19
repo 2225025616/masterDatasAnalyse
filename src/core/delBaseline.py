@@ -86,11 +86,12 @@ def dwt(data):
  
 #进行样条差值
 import scipy.interpolate as spi
+from scipy.signal import find_peaks_cwt
 
 def delbaseine(data):
     x = data[0]
     y = data[1]
-    print('x len: ', len(x))
+    # print('x len: ', len(x))
     x_max =[]
     y_max =[]
     x_min =[]
@@ -120,67 +121,89 @@ def delbaseine(data):
     
     iy1_arg = (iy1_max+iy1_min)/2
     #进行三次样条拟合
-    ipo3_max=spi.splrep(x_max,y_max,k=3) #源数据点导入，生成参数
-    ipo3_min=spi.splrep(x_min,y_min,k=3) #源数据点导入，生成参数
-    iy3_max=spi.splev(x,ipo3_max) #根据观测点和样条参数，生成插值
-    iy3_min=spi.splev(x,ipo3_min) #根据观测点和样条参数，生成插值
-    iy3_arg = (iy3_max+iy3_min)/2
+    # ipo3_max=spi.splrep(x_max,y_max,k=3) #源数据点导入，生成参数
+    # ipo3_min=spi.splrep(x_min,y_min,k=3) #源数据点导入，生成参数
+    # iy3_max=spi.splev(x,ipo3_max) #根据观测点和样条参数，生成插值
+    # iy3_min=spi.splev(x,ipo3_min) #根据观测点和样条参数，生成插值
+    # iy3_arg = (iy3_max+iy3_min)/2
     
     
     iy1 = y - iy1_arg
-    iy3 = y - iy3_arg
-    
+    # iy3 = y - iy3_arg
+    peaks = find_peaks_cwt(iy1, 0.2)
+    print(peaks)
+    iy1 = np.array(iy1)
+    x = np.array(x)
+    print(x[peaks])
     # 从图可看出1次样条插值更好
     iy1_abs = abs(iy1)
-    
+    # print(iy1)
+    # print(iy1_abs)
     # 取阈值 0.1
     iy1_final = []
     x_final = []
     y_final = []
-    for i,d in enumerate(iy1_abs):
-        if d>0.015:
-            iy1_final.append(d)
-            x_final.append(x[i])
-            y_final.append(y[i])
-            
+    
+    # 阈值合理化
+    y_abs = list(abs(iy1))
+    # threshold=(max(iy1_abs)-sum(y_abs)/len(y_abs))/10
+    # print('threshold: ',threshold)
+    # for i,d in enumerate(iy1_abs):
+    #     if d>threshold:
+    #         # print(i)
+    #         # print(d)
+    #         iy1_final.append(d)
+    #         x_final.append(x[i])
+    #         y_final.append(y[i]+30)
+    
+    
+    # print(x_final)
+    # print(y_final)      
     ##作图
-    # plt.figure(figsize=(18,12))
-    # plt.plot(x,iy1_max,'r+',label='max')
-    # plt.plot(x,iy1_min,'go',label='min')
-    # plt.plot(x,iy1,'b+',label='interp1')
-    # plt.plot(x,iy1_abs,'k.',label='interp1-abs')
+    plt.figure(figsize=(18,12))
+    # # 上包络
+    # plt.plot(x,iy1_max+28,'r+',label='max')
+    # 下包络
+    # plt.plot(x,iy1_min + 28,'go',label='min')
+    # 去基线
+    plt.plot(x,iy1,'b+',label='interp1')
+    plt.plot(x[peaks],iy1[peaks],'ro')
+    # 把所有的都翻上去
+    # plt.plot(x,iy1_abs,'r*',label='interp1-abs')
     # plt.plot(x_final,iy1_final,'r+',label='interp1-abs')
     # plt.plot(x,y,'bo',label='prime')
-    # plt.plot(x_final,y_final,'r*',label='final')
-    # plt.title('interp-1-final')
+    plt.plot(x_final,y_final,'k*',label='final')
+    plt.title('interp-1-final')
   
     notch = min(y_final)
     m = y_final.index(min(y_final))
     l = len(y_final)-y_final.index(min(y_final))
+    print('notch: ', notch)
     print('notch index')
     print(l)
     print(m)
     i = m if m<l else l
-    wlData = x_final[m-i:m+i-1]
-    peakData = y_final[m-i:m+i-1]
-    print(len(x_final))
+    print(i)
+    wlData = x_final[m-i:m+i+1]
+    peakData = y_final[m-i:m+i+1]
+    print(len(wlData))
     # 二次拟合
     coef = np.polyfit(wlData, peakData, 2)
     y_fit = np.polyval(coef, wlData)
-    plt.plot(wlData, peakData, 'k-')
-    plt.plot(wlData, y_fit, 'b.')
+    # plt.plot(wlData, peakData, 'k-')
+    # plt.plot(wlData, y_fit, 'b.')
     # 找出其中的峰值/对称点
     if coef[0] != 0:
         ctwl = -0.5 * coef[1] / coef[0]            
-        ctwl = round(ctwl, 2)        
-        plt.plot([ctwl]*5, np.linspace(min(peakData),max(peakData),5),'r--')
+        ctwl = round(ctwl, 4)        
+        # plt.plot([ctwl]*5, np.linspace(min(peakData),max(peakData),5),'g--')
         print('ctwl : ',ctwl)
     else:
         raise ValueError('Fail to fit.')
-    return x_final,y_final,ctwl,notch
+    return wlData,peakData,ctwl,notch
 
 
 # 测试 
-# from readOsa import readDatas
-# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2233.CSV')
-# delbaseine(dt)
+from readOsa import readDatas
+dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0154.CSV')
+delbaseine(dt)

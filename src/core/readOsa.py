@@ -14,7 +14,7 @@ import time
 def readDatas(csvName):
     # CSV 文件
     # 拿到光谱信息
-    # print('csvName: ',csvName)
+    print('csvName: ',csvName)
     specDatas = []
     with open(csvName) as f:
         if csvName.split('/')[-1].startswith('W'):
