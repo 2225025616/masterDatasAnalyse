@@ -22,7 +22,7 @@ from readTxtofModem import readText
 # 读取热电偶的数据
 from readTempDatas import readTemp
 # 读取label存的光谱仪的数据
-from readTxtOfLabel import readSpecInfo
+# from readTxtOfLabel import readSpecInfo
 # 读取BaseSpec存的反射光谱的数据
 from readCSVByModem import readInfo
 
@@ -93,28 +93,28 @@ def transRDatas(dirName):
 
 
 # 读取label存的光谱仪OSA数据
-def transRegenerateDatas(dirName):
-    # 循环读txt文件
-    csvRFiles = repeatFiles(dirName, 'txt')
+# def transRegenerateDatas(dirName):
+#     # 循环读txt文件
+#     csvRFiles = repeatFiles(dirName, 'txt')
     
-    datas = pd.DataFrame(columns=('time', 'ctwl/nm','peak/dBm')) 
-    # 建立临时数组变量
-    ctwlDatas = []
-    specInfo = []
-    timeData = []
-    # 对反射文件遍历，拿到中心波长和峰值
-    for i,file in enumerate(csvRFiles):
-        data = list(readSpecInfo(csvRFiles[i]))
-        # print(data)
-        ctwlDatas.extend(data[1])
-        specInfo.extend(data[2])
-        timeData.extend(data[0])
+#     datas = pd.DataFrame(columns=('time', 'ctwl/nm','peak/dBm')) 
+#     # 建立临时数组变量
+#     ctwlDatas = []
+#     specInfo = []
+#     timeData = []
+#     # 对反射文件遍历，拿到中心波长和峰值
+#     for i,file in enumerate(csvRFiles):
+#         data = list(readSpecInfo(csvRFiles[i]))
+#         # print(data)
+#         ctwlDatas.extend(data[1])
+#         specInfo.extend(data[2])
+#         timeData.extend(data[0])
          
         
-    datas['ctwl/nm'] = ctwlDatas
-    datas['transmissionDepth/dBm'] = specInfo
-    datas['time'] = timeData
-    return datas
+#     datas['ctwl/nm'] = ctwlDatas
+#     datas['transmissionDepth/dBm'] = specInfo
+#     datas['time'] = timeData
+#     return datas
 
 # 读取温度特性实验过程的数据
 def transTempDatas(dirName):

@@ -18,10 +18,11 @@ def calTInfo(data, L=12):
     y = data[1]
     ctwl = data[2]
     notch = data[3]
-    index = y.index(notch)
     # print('xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx')
-    # print('len: ',len(y))
-    # print('index: ', index)
+    # print('y: ',y)
+    # print('y: ',y)
+    # print('notch: ', notch)
+    index = y.index(notch)
     y_10_l = y[0:index]
     y_10_l.reverse()
     y_10_l = np.array(y_10_l)
@@ -105,9 +106,9 @@ def calTInfo(data, L=12):
     
 
 # 测试 
-# from readOsa import readDatas
-# dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0054.CSV')
-# from delBaseline import delbaseine
-# data = delbaseine(dt)
-# dd = calTInfo(data)
-# print(dd)
+from readOsa import readDatas
+dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W0040.CSV')
+from delBaseline import delbaseine
+data = delbaseine(dt)
+dd = calTInfo(data)
+print(dd)
