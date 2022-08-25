@@ -9,7 +9,7 @@ Created on Mon Aug  8 15:41:00 2022
 # 时间、中心波长、带宽，光谱信息
 
 import pandas as pd
-from findThresh import findPeak, findNotch
+from delBase import findPeak, findNotch
 
 
 def readSpecR(fileName):
