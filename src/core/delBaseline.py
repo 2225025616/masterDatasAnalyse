@@ -202,7 +202,7 @@ def delbaseine(data):
     else:
         raise ValueError('Fail to fit.')
         
-      
+
     print('notch: ', notch)
     print('wl: ', x)
     print('notch index: ',y.index(min(y_final)))

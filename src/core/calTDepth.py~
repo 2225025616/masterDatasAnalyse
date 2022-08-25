@@ -107,7 +107,7 @@ def calTInfo(data, L=12):
 
 # 测试 
 from readOsa import readDatas
-dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W2233.CSV')
+dt = readDatas('../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-T/W0040.CSV')
 from delBaseline import delbaseine
 data = delbaseine(dt)
 dd = calTInfo(data)

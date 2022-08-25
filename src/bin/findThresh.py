@@ -1,74 +1,87 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Aug  7 20:35:12 2022
+Created on Sun Aug  23 15:35:12 2022
 
-@author: Administrator
+@author: sunyali
 """
 
-# 寻峰功能实现
-# 根据最大点及带宽，通过高斯拟合，找到峰值
+
+# 对光谱强度 寻峰功能实现
+# 根据最大点，找到峰值
 
 
-import numpy as np
+from pywt import wavedec, waverec
+import copy
 import math
+import numpy as np
 
-def findThresh(data, L=12):
-    xData = data[0]
-    yData = data[1]
-    print(data[2])
-    print(data[3])
-    peak = 0
-    y = [abs(i) for i in yData]
-#    根据光谱的能量进行高斯拟合
-    y = np.array(y)
-    # y = np.array(yData)
-    # print(y)
-    print('guss**********************')
-    
-    zMatrix = np.matrix(np.log(y))
-    # print('z 矩阵: ',zMatrix)
-    # 构造 X 矩阵
-    xMatrixT = np.matrix(np.reshape(np.concatenate((np.ones((len(y))), xData, np.multiply(np.array(xData), np.array(xData)))), (3, len(y))))
-    xMatrix = np.matrix(xMatrixT.T)
-    # print("X矩阵: ", xMatrix)
-    # 根据最小二乘原理，构成B的广义最小二乘解
-    print('B')
-    det = np.linalg.det((xMatrixT*xMatrix))
-    print(det)
-    if det == 0:
-        peak=max(data[1])
-        ctwl=data[0][data[1].index(peak)]
-    else:
-        print((xMatrixT*xMatrix).I*xMatrixT)
-        print(((xMatrixT*xMatrix).I*xMatrixT))
-        bMatrix = ((xMatrixT*xMatrix).I*xMatrixT)*zMatrix.T
-        print('B矩阵:', bMatrix)
-    
-        # 根据高斯函数，利用b、x求得峰值信息和半宽高
-        # lnYmax - (Xmax*Xmax/S) =B0
-        # B1 =2Xmax/S
-        # - 1/S =B2
-        b0, b1, b2 = float(bMatrix[0][0]), float(bMatrix[1][0]), float(bMatrix[2][0])
-        # print('b0={} ,b1={}, b2={}'.format(b0,b1,b2))
-        s = -1/b2
-        ctWl = s*b1/2
-        peak = math.exp(b0+ctWl**2/s)
-    print('半宽={} ,波谷={}, 中心波长={}'.format(s, peak, ctWl))
-    # 计算反射率、有效折射率
-    # 并记下结果
-    # r = 1 - abs(math.pow(10, -peak/10))
-    # overlapFactor = 0.8
-    # a = math.sqrt(r) if math.sqrt(r)<0.99 else 0.99
-    # # print(math.sqrt(r))
-    # # print(math.atanh(a))
-    # # print(math.atanh(a)*ctWl)
-    # n_ac = math.atanh(a)*ctWl/(overlapFactor*math.pi*float(L)*10**6)
-    # n_dc = 1.456/(overlapFactor*ctWl)
-    # print('反射率：', r)
-    # print('平均折射率：',n_ac)
-    # print('dc: ', n_dc)
-    return ctWl, peak
 
+def findPeak(data):
+    peak = max(data)
+    return abs(peak)
+# 寻峰功能实现
+# 非均匀最小二乘
+
+
+def findNotch(data):
+    x = np.array(len(data))
+    y = data
+    notch = 0
+    r = 0
+    # 小波变换求notch
+    coeffs = wavedec(y, 'db4', level=5)
+    # coeffs_2 = copy.deepcopy(coeffs)
+    for ix, val in enumerate(coeffs):
+        if ix == 0:
+            coeffs[ix] = np.zeros_like(val)
+    y = waverec(coeffs, wavelet='db4')
+    # print('777777777777777777777777')
+    # 根据拟合后的数据，找到大概透射深度的位置、及对应的波长
+    y = y.tolist()
+    pre_i = y.index(min(y))
+    if pre_i > 0:
+        print(pre_i)
+        # print(len(x))
+        # print(x)
+        # pre_ctwl = x[pre_i]
+        # print(pre_ctwl)
+        # 在预中心波长左右各120个点的范围内，再找透射深度及中心波长
+        startIndex = pre_i - 120 if pre_i - 120 > 0 else 0
+        endIndex = pre_i + 120 if pre_i + 120 < len(y) else len(y)
+
+        # x_new = x[startIndex:endIndex]
+        y = y[startIndex:endIndex]
+        # 根据波谷值
+        notch = min(y)
+        # print(notch)
+        index = y.index(notch)
+        y_10_l = y[0:index]
+        y_10_l.reverse()
+        y_10_l = np.array(y_10_l)
+        y_10_r = np.array(y[index:-1])
+        step = len(y_10_l)//6 if len(y_10_l) < len(y_10_r) else len(y_10_r)//6
+        # 窗口滑动求差分，依次滑动
+        dy_10_l = abs(np.diff(y_10_l, step))
+        dy_10_r = abs(np.diff(y_10_r, step))
+        # print('--------------diff-----------------')
+        # print(len(dy_10_l))
+        # print(len(dy_10_r))
+        # print(min(dy_10_l))
+        # print(min(dy_10_r))
+        l_i = np.argwhere(dy_10_l == min(dy_10_l))[0][0]
+        l_r = np.argwhere(dy_10_r == min(dy_10_r))[0][0]
+        # print(l_i)
+        # print(l_r)
+        ref_l = y_10_l[l_i]
+        ref_r = y_10_r[l_r]
+        # print(ref_l)
+        # print(ref_r)
+        notch = (ref_l+ref_r)/2-notch
+        # 计算反射率、有效折射率
+        # 并记下结果
+        r = 1 - abs(math.pow(10, -notch/10))
+
+    return abs(notch), r
 
 
 # 测试
@@ -76,6 +89,3 @@ def findThresh(data, L=12):
 # osaDatas = readTDatas('../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/D0016.DT8','../../DataSource/RFBG-PolyimideSMF28E/20220711/regenerationOSA-T/W0016.csv')
 # data = findThresh(osaDatas)
 # print(data)
-
-
-
