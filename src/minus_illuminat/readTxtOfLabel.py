@@ -9,79 +9,84 @@ Created on Mon Aug  8 15:41:00 2022
 # 时间、中心波长、带宽，光谱信息
 
 import pandas as pd
-from delBase import findPeak, findNotch
+from decimal import Decimal
+import math
+from collections import Counter
 
 
-def readSpecR(fileName):
-    time = []
-    ctwl = []
-    specInfo = []
-    # fDatas = pd.read_csv(fileName)
-
-    with open(fileName) as f:
-        fDatas = f.readlines()
+# 读光谱文件，提取出中心波长、透射深度、反射峰值
+def readSpec(rFile,tFile,originalSpec):
+    # 读取光谱数据
+    with open(originalSpec) as f:
+        df = f.readlines()[39:]
     f.close()
-    fDatas = [i.strip('\n').split('\t') for i in fDatas]
+    print(df)
+    originalY = [Decimal(i.strip('\n').split(',')[1]) for i in df]
+
+    timeDatas=[]
+    ctwlDatas=[]
+    tDepthDatas = []
+    peakDatas=[]
+    # 读反射文件
+    rDatas = pd.read_csv(rFile, header=None)
     print('*******RRRRRRRRRRRRRRRRRRRR***')
-    time = [i[0]+' '+i[1] for i in fDatas]
-    # print(time[0])
-    ctwl = [i[2] for i in fDatas]
-    for data in fDatas:
-        dt = [eval(i) for i in data[4:]]
-        specInfo.append(dt)
-    # for spec in specInfos:
-    #     for i in spec:
-    #         i = eval(i)
-    # print('peak: ', min(specInfo))
-    # print('txtfile name: ', time[0])
-    # print('txtfile name: ', specInfo[0])
-    # print('txtfile name: ', ctwl[0])
-    print('R len: ', len(time))
-    peak = []
-    for y in specInfo:
-        peak.append(findPeak(y))
-    return time, ctwl, peak
+    for i in rDatas.index:
+        line = rDatas.iloc[i][0].strip('\n').split('\t')
+        time = line[0]+' '+line[1]
+        ctwl=line[2]
+        timeDatas.append(time)
+        ctwlDatas.append(ctwl)
+        y = list(line[4:])
+        # print('y: ',len(y))
+        # 光栅反射光谱-光源反射光谱
+        y = [eval(i) for i in y]
+        # 得到反射峰值
+        peak = Decimal(max(y))
+        peakDatas.append(peak)
+    # ****************反射数据读取结束******************************
 
-
-def readSpecT(fileName):
-    # time = []
-    specInfo = []
-    # fDatas = pd.read_csv(fileName)
-    with open(fileName) as f:
-        fDatas = f.readlines()
-    f.close()
-    fDatas = [i.strip('\n').split('\t') for i in fDatas]
-    print('****TTTTTTTTTTTTTTT****')
-    # time = [i[0]+' '+i[1] for i in fDatas]
-    # print(time[0])
-    for data in fDatas:
-        dt = [eval(i) for i in data[4:]]
-        specInfo.append(dt)
-
-    print('T len: ', len(specInfo))
-    notchDatas = []
-    r_arr = []
-    for y in specInfo:
-        notchDatas.append(findNotch(y)[0])
-        r_arr.append(findNotch(y)[1])
-    return notchDatas, r_arr
-
+    # 读取透射文件
+    TDatas = pd.read_csv(tFile, header=None)
+    reflection = []
+    # print(len(fDatas))
+    print('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
+    print('originalY: ', len(originalY))
+    for i in TDatas.index:
+        # print(i)
+        # print(tt.strip('\n').split('\t') for tt in fDatas.iloc[i])
+        # print(fDatas.iloc[i])
+        line = TDatas.iloc[i][0].strip('\n').split('\t')
+        # print(line)
+        # print('YYYYYYYYYYYYYYYYYYYYYYYY')
+        y = list(line[4:])
+        # print('y: ',len(y))
+        y=[eval(i) for i in y]
+        # 光栅透射光谱-光源透射光谱
+        # print(y[0])
+        fbgY = [Decimal(y[i]) - Decimal(originalY[i]) for i, d in enumerate(y)]
+        # print(fbgY[0])
+        # 得到透射深度
+        notch = Decimal(max(fbgY)) - Decimal(min(fbgY))
+        r = Decimal((1 - Decimal(math.pow(10, -notch/10))))*100
+        # print(notch)
+        tDepthDatas.append(notch)
+        reflection.append(r)
+        # print(r)
+        # break
+    return timeDatas, ctwlDatas, peakDatas, tDepthDatas, reflection
 
 # 测试
 df = pd.DataFrame(
-    columns=('time', 'ctwl/nm', 'reflection/dBm', 'transmissionDepth/dB', 'reflection/%'))
-
-data_r = readSpecR(
-    "../../DataSource/RFBG-PolyimideSMF28E/20220730/overHigh/1000-r.txt")
-
-df['time'] = data_r[0]
-df['ctwl/nm'] = data_r[1]
-df['reflection/dBm'] = data_r[2]
-
-data_t = readSpecT(
-    "../../DataSource/RFBG-PolyimideSMF28E/20220730/overHigh/1000-t.txt")
+    columns=('time', 'ctwl/nm', 'thresh/dBm', 'notch/dB', 'reflection/%'))
 
 
-df['transmissionDepth/dB'] = data_t[0]
-# df['reflection/%'] = data_t[1]
-df.to_csv("../../resultDatas/20220728/1000dgree-TR.csv")
+regenerationSpec = readSpec(
+    "../../DataSource/H1060/20220823-1000/regeneration/1000-R.txt",  "../../DataSource/H1060/20220823-1000/regeneration/1000-T.txt","../../DataSource/H1060/20220823-1000/originalT.CSV")
+
+
+df['time'] = regenerationSpec[0]
+df['ctwl/nm'] = regenerationSpec[1]
+df['thresh/dBm'] = regenerationSpec[2]
+df['notch/dB'] = regenerationSpec[3]
+df['reflection/%'] = regenerationSpec[4]
+df.to_csv("../../resultDatas/20220823-1000-H1060-7mm-49DB/1000-regeneration.csv")
