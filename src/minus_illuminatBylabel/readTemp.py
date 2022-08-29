@@ -15,7 +15,7 @@ import time
 import numpy as np
 
 def readTemp(txtFile, tstFile):
-    tempDatas = []
+    tempStamp = []
     timeDatas = []
     # 读取温度数据
     with open(txtFile) as f:
@@ -39,12 +39,13 @@ def readTemp(txtFile, tstFile):
     # print(startTime)
     # 从开始，加上最开始的时间戳；再转为时间格式
     for i in np.arange(0, len(tempDatas)):
-        timeDatas.append(time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(float(i)+start)))
+        timeDatas.append(str(time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(float(i)+start))))
+        # tempStamp.append(time.mktime(time.strftime("%Y/%m/%d %H:%M:%S", time.localtime(float(i)+start))))
         
     # print('时间戳')
-    # print(timeDatas[500])
+    # print(type(timeDatas[500]))
     
-    return timeDatas, tempDatas
+    return timeDatas, tempStamp, tempDatas
  
     
  

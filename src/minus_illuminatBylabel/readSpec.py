@@ -11,7 +11,8 @@ Created on Mon Aug  8 15:41:00 2022
 import pandas as pd
 from decimal import Decimal
 import math
-from collections import Counter
+import time
+# from collections import Counter
 
 
 # 读光谱文件，提取出中心波长、透射深度、反射峰值
@@ -26,16 +27,22 @@ def readSpec(rFile,tFile,originalSpec):
     timeDatas=[]
     ctwlDatas=[]
     tDepthDatas = []
+    timeStamp=[]
     peakDatas=[]
     # 读反射文件
     rDatas = pd.read_csv(rFile, header=None)
     print('*******RRRRRRRRRRRRRRRRRRRR***')
     for i in rDatas.index:
         line = rDatas.iloc[i][0].strip('\n').split('\t')
-        time = line[0]+' '+line[1]
+
+        # time.strptime 转为时间格式
+        t = line[0]+' '+line[1]
+        # t = time.strptime(t, "%Y/%m/%d %H:%M:%S")
         ctwl=line[2]
-        timeDatas.append(time)
+        timeDatas.append(t)
+        stamp = time.mktime(time.strptime(t, "%Y/%m/%d %H:%M:%S"))
         ctwlDatas.append(ctwl)
+        timeStamp.append(stamp)
         y = list(line[4:])
         # print('y: ',len(y))
         # 光栅反射光谱-光源反射光谱
@@ -73,5 +80,5 @@ def readSpec(rFile,tFile,originalSpec):
         reflection.append(r)
         # print(r)
         # break
-    return timeDatas, ctwlDatas, peakDatas, tDepthDatas, reflection
+    return timeDatas,timeStamp, ctwlDatas, peakDatas, tDepthDatas, reflection
 
