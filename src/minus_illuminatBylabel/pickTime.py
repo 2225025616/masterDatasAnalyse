@@ -16,23 +16,31 @@ def pickTime(file1, file2):
     tempTime = list(df2['time'])
     time2 = [time.mktime(time.strptime(i,"%Y/%m/%d %H:%M:%S")) for i in tempTime]
     temperatureDatas = list(df2['temperature'])
+    ctwlDatas = list(df1['ctwl'])
     # print('time1: ', time1[0])
     # print(time2[627])
     # print(time2[628])
     # print(time1[0], '/t', tempTime[1])
     tempDatas = []
-    for i,t in enumerate(time1):
+    wavelengths = []
+    timeDatas = []
+    for i, t in enumerate(time1):
         # print(time2[i])
         # print(time2[628] == t)
-        j = time2.index(t)
-        temp = temperatureDatas[j]
-        # print('index:{}, temp:{}'.format(j, temp))
-        tempDatas.append(temp)
+        if t in time2:
+            j = time2.index(t)
+            temp = temperatureDatas[j]
+            # print('index:{}, temp:{}'.format(j, temp))
+            tempDatas.append(temp)
+            wavelengths.append(ctwlDatas[i])
+            timeDatas.append(rfbgTime[i])
 
-    # 插入第2列，表头为温度
-    df1.insert(loc=2, column='temperature', value=tempDatas)
+    df = pd.DataFrame(columns=['time', 'temperature', 'ctwl'])
+    df["time"] = timeDatas
+    df["temperature"] = tempDatas
+    df["ctwl"] = wavelengths
 
-    return df1
+    return df
 
 
 
