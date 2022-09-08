@@ -1,9 +1,8 @@
 # 读取光源数据-to 数组
 
-import os
 import pandas as pd
 
-def readIlluminat(filename):
+def readCSV(filename):
     df = pd.read_csv(filename, header=32)
     # print(df.iloc(1)[0])
     # print(df.iloc(1)[1])
@@ -13,5 +12,5 @@ def readIlluminat(filename):
     return wlData, peakData
 
 # 测试
-data = readIlluminat(r'../../DataSource/RFBG-PolyimideSMF28E/20220711-850/originalSpec.CSV')
+# data = readCSV('../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/originalSpec.CSV')
 # print(data[0][0])
