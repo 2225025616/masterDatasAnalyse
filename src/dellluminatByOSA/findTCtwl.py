@@ -38,14 +38,27 @@ def findTR(TDir, originalSpec):
             # 由此，减到了波长的光源干扰，最大-最小=透射深度
             peaks = dt[1]
             wlDatas = list(dt[0])
+            # print(wlDatas[-1])
+            # print(list(originalSpec[0])[-1])
+            # print(list(originalSpec[2])[-1])
             # 判断投射文件的波长范围和光源波长范围相同
-            if len(originalSpec) < 3 or originalSpec[0][-1] == wlDatas[-1]:
-                originalT = originalSpec[1]
-            elif len(originalSpec) > 2:
-                originalT = originalSpec[3]
+            if list(originalSpec[0])[-1] == wlDatas[-1]:
+                # print(wlDatas[-1])
+                i = wlDatas.index(list(originalSpec[2])[0])
+                originalT = list(originalSpec[1])
+                peaks = list(peaks[i:-1])
+                wlDatas = wlDatas[i:]
+                # print(originalT[-1])
+            elif len(originalSpec) > 2 or list(originalSpec[2])[-1] == wlDatas[-1]:
+                # print(wlDatas[-1])
+                i = wlDatas.index(list(originalSpec[2])[0])
+                originalT = list(originalSpec[3])
+                peaks = list(peaks[i:-1])
+                wlDatas = wlDatas[i:]
+                # print(originalT[-1])
             # 分别对应减去光源
-            print(len(peaks))
-            print(wlDatas[-1])
+
+            # print(wlDatas[-1])
             tData = [float((Decimal(peaks[i]) - Decimal(originalT[i])).quantize(Decimal("0.0000"), ROUND_HALF_UP)) for i in range(len(peaks))]
             print('tData: ', len(tData))
             notch = Decimal(max(tData)) - Decimal(min(tData)).quantize(Decimal("0.0000"), ROUND_HALF_UP)
@@ -78,5 +91,6 @@ def findTR(TDir, originalSpec):
 
 
 # 测试
-# originalSpec = readCSV('../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/originalSpec.CSV')
-# findTR('../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/regenerationOSA-T',originalSpec)
+# originalT = readCSV('../../DataSource/RFBG-PolyimideSMF28E/202207328-900-re11h/originalSpec-1.CSV')
+# originalT+=(readCSV('../../DataSource/RFBG-PolyimideSMF28E/202207328-900-re11h/originalSpec-2.CSV'))
+# regenerationSpec = findTR('../../DataSource/RFBG-PolyimideSMF28E/202207328-900-re11h/regenerationOSA-T', originalT)

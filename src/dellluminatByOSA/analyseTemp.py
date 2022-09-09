@@ -13,7 +13,7 @@ from statsmodels.tsa.arima.datasets.brockwell_davis_2002 import data
 
 def analyze(file,dicts):
     df = pd.read_csv(file)
-    wlDatas = list(df['ctwl/nm'])
+    wlDatas = list(df['ctwl'])
     # print(tempDatas.most_common(3))
     # print(wlDatas.most_common(3))
     # print(wlDatas)

@@ -26,7 +26,7 @@ from toDataframeFormat import transTDatas, transRDatas, transRegenerateDatas, tr
 
 
 # 20220730实验数据导出
-# outputPath = "../../resultDatas/20220728"
+outputPath = "../../resultDatas/20220728-900-SMF28E"
 # dataTempTime = transTempTime("../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/TEMP.txt", "../../DataSource/RFBG-PolyimideSMF28E/20220730/temperatureDatas/20220804RFBG.TST")
 # datasR = transRDatas("../../DataSource/RFBG-PolyimideSMF28E/20220730/regenerationOSA-R")
 # datasR.to_csv(outputPath+"/regenerateR.csv")
