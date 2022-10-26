@@ -1,8 +1,8 @@
-from readSpec import readSpec
+from readT import readSpec
 import pandas as pd
 from readTemp import readTemp
 from pickTime import pickTime
-from readCtwl import readCtwl
+from readRCtwl import readCtwl
 from analyseTemp import analyze
 
 

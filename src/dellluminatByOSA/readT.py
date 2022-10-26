@@ -323,5 +323,5 @@ def readT(tFile, L, illuminant):
     return fTime, ctwl, t_depth, r, n_ac
 
 # 测试
-# data = readT('../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/regenerationOSA-T/W0004.CSV', 12000, '../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/originalSpec.CSV')
+# data = readT('../../DataSource/HS/H-S-850-N2/regenerationOSA-T/W0004.CSV', 12000, '../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/originalSpec.CSV')
 # print(data)

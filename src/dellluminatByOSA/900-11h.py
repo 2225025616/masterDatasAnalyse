@@ -1,4 +1,4 @@
-from readT import readCSV
+from readT import readT
 import pandas as pd
 from findTCtwl import findTR
 from readTemp import readTemp
