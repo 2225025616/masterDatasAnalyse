@@ -32,7 +32,7 @@ def dwt(data):
     
     coeffs = wavedec(y, 'db4', level=5)
     # coeffs_2 = copy.deepcopy(coeffs)
-    for ix,val in enumerate(coeffs):
+    for ix, val in enumerate(coeffs):
         if ix == 0:
             coeffs[ix] = np.zeros_like(val)
     y = pywt.waverec(coeffs, wavelet='db4')

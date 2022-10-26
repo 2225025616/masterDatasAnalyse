@@ -13,7 +13,7 @@ from decimal import Decimal, ROUND_HALF_UP
 import math
 import numpy as np
 import time
-from readSpecCSV import readCSV
+from readT import readT
 
 
 def findTR(TDir, originalSpec):
