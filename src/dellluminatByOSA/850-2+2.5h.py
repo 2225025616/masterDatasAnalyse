@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from readT import readT
-from readTemp import readTemp
+from readTime import readTemp
 from pickTime import pickTime
 from readRCSV import readR
 from analyseTemp import analyze

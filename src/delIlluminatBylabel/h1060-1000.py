@@ -1,7 +1,7 @@
 from readT import readSpec
 import pandas as pd
-from readTemp import readTemp
-from pickTime import pickTime
+from readTime import readTemp
+from contactTempData import pickTime
 from readRCtwl import readCtwl
 from analyseTemp import analyze
 

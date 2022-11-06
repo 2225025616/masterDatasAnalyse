@@ -34,7 +34,7 @@ def readTemp(txtFile, tstFile):
     # time.strftime 转为时间
     startTime = time.mktime(time.strptime(startTime, "%Y/%m/%d %H:%M:%S"))
     endTime = time.mktime(time.strptime(endTime, "%Y/%m/%d %H:%M:%S"))
-    start = startTime+41 if endTime-len(tempDatas)==startTime else endTime -len(tempDatas) +41
+    start = startTime+41 if endTime-len(tempDatas)==startTime else endTime -len(tempDatas) + 41
     # start = endTime -len(tempDatas) +41
     # print(startTime)
     # 从开始，加上最开始的时间戳；再转为时间格式

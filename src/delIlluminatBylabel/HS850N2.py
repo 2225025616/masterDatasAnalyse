@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 from readT import readT
-from readTemp import readTemp
-from pickTime import pickTime
+from readTime import readTemp
+from contactTempData import pickTime
 
 from pickupTempDatas import concentrateTempDatas
 

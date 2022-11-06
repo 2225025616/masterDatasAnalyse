@@ -205,7 +205,7 @@ import pywt
 from pywt import wavedec
 def readT(tFile, L, illuminant):
     dfT = pd.read_csv(tFile, header=32)
-    df = pd.read_csv(illuminant, header=32)
+    df = pd.read_csv(illuminant, header=30)
     x = dfT.iloc(1)[0].tolist()
     yT = np.array(dfT.iloc(1)[1])
     illuminantWl = np.array(df.iloc(1)[0])
@@ -220,8 +220,10 @@ def readT(tFile, L, illuminant):
         y = yT - illuminantPeak
     else:
         # 找到原透射光谱在光源透射谱中的对应的索引，并比对值，然后找到波长对应的一一相减
-        s = illuminantWl.index(x[0])
-        e = illuminantWl.index(x[-1])
+        s = np.where(illuminantWl==x[0])[0][0]
+        e = np.where(illuminantWl==x[-1])[0][0]
+
+        print(illuminantPeak[s:e])
         y = yT - illuminantPeak[s:e+1]
     # ************减去光源的光谱找到***********
 
@@ -323,5 +325,5 @@ def readT(tFile, L, illuminant):
     return fTime, ctwl, t_depth, r, n_ac
 
 # 测试
-# data = readT('../../DataSource/HS/H-S-850-N2/regenerationOSA-T/W0004.CSV', 12000, '../../DataSource/RFBG-PolyimideSMF28E/20220711-850-re4.5h/originalSpec.CSV')
+# data = readT('../../DataSource/RFBG-PolyimideSMF28E/202207328-900-re11h/regenerationOSA-T/W2234.CSV', 12000, '../../DataSource/RFBG-PolyimideSMF28E/202207328-900-re11h/originalSpec.CSV')
 # print(data)

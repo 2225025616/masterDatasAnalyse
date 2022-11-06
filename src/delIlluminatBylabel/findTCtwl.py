@@ -33,7 +33,7 @@ def findTR(TDir, originalSpec):
             # print('****************')
             # print(path)
             # csvArr.append(TDir + '/' + path)
-            dt = readCSV(TDir + '/' + path)
+            dt = readT(TDir + '/' + path)
             # 波长一一对应，找打索引，对应减去光强
             # 由此，减到了波长的光源干扰，最大-最小=透射深度
             peaks = dt[1]
