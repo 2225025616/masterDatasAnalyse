@@ -1,23 +1,48 @@
-from readT import readSpec
+from readT import readTdelOriginalSpec, readTofWavedec, readTofInterpolate
 import pandas as pd
 from readTime import readTemp
 from contactTempData import pickTime
 from readRCtwl import readCtwl
 from analyseTemp import analyze
 
-
-# 测试
+#
 # df = pd.DataFrame(
-#     columns=('time', 'ctwl/nm', 'thresh/dBm', 'notch/dB', 'reflection/%'))
-# regenerationSpec = readSpec(
-#     "../../DataSource/RFBG-PolyimideSMF28E/20220829-850-re11h/regeneration/850_R.txt",  "../../DataSource/RFBG-PolyimideSMF28E/20220829-850-re11h/regeneration/850_T.txt","../../DataSource/RFBG-PolyimideSMF28E/20220829-850-re11h/originalT.CSV")
+#     columns=('time', 'ctwl/nm', 'notch/dB', 'reflection/%', 'n_ac'))
+# regenerationSpec = readTdelOriginalSpec(
+#     "../../DataSource/RTlabel/20220829-850-re11h/regeneration/850_T.txt",12000, '../../DataSource/RTlabel/20220829-850-re11h/originalSpec.CSV')
 # df['time'] = regenerationSpec[0]
-# # df['timeStamp'] = regenerationSpec[1]
-# df['ctwl/nm'] = regenerationSpec[2]
-# df['thresh/dBm'] = regenerationSpec[3]
-# df['notch/dB'] = regenerationSpec[4]
-# df['reflection/%'] = regenerationSpec[5]
-# df.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/regenerationTR.csv")
+# # fTimeArr, ctwlArr, t_depthArr, rArr, n_acArr
+# df['ctwl/nm'] = regenerationSpec[1]
+# df['notch/dB'] = regenerationSpec[2]
+# df['reflection/%'] = regenerationSpec[3]
+# df['n_ac'] = regenerationSpec[4]
+# df.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/RFBG-T-delOriginalSpec.csv")
+#
+#
+# df1 = pd.DataFrame(
+#     columns=('time', 'ctwl/nm', 'notch/dB', 'reflection/%', 'n_ac'))
+# data1 = readTofWavedec(
+#     "../../DataSource/RTlabel/20220829-850-re11h/regeneration/850_T.txt",12000, '../../DataSource/RTlabel/20220829-850-re11h/originalSpec.CSV')
+# df1['time'] = data1[0]
+# # fTimeArr, ctwlArr, t_depthArr, rArr, n_acArr
+# df1['ctwl/nm'] = data1[1]
+# df1['notch/dB'] = data1[2]
+# df1['reflection/%'] = data1[3]
+# df1['n_ac'] = data1[4]
+# df1.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/RFBG-T-Wavedec.csv")
+#
+#
+# df = pd.DataFrame(
+#     columns=('time', 'ctwl/nm', 'notch/dB', 'reflection/%', 'n_ac'))
+# data2 = readTofInterpolate(
+#     "../../DataSource/RTlabel/20220829-850-re11h/regeneration/850_T.txt",12000, '../../DataSource/RTlabel/20220829-850-re11h/originalSpec.CSV')
+# df['time'] = data2[0]
+# # fTimeArr, ctwlArr, t_depthArr, rArr, n_acArr
+# df['ctwl/nm'] = data2[1]
+# df['notch/dB'] = data2[2]
+# df['reflection/%'] = data2[3]
+# df['n_ac'] = data2[4]
+# df.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/RFBG-T-Interpolate.csv")
 #
 #
 # timeDf = pd.DataFrame(columns=['time', 'temperature'])
@@ -27,10 +52,10 @@ from analyseTemp import analyze
 # timeDf["temperature"] = datetime[2]
 # # print('hh:mm:ss: ',datetime[0][89])
 # timeDf.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/RFBGTemp.csv")
-#
-#
-# dt=pickTime("../../resultDatas/20220829-850-re11h-SMF28E/regenerationTR.csv", "../../resultDatas/20220829-850-re11h-SMF28E/RFBGTemp.csv")
-# dt.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/rfbgTempTR.csv")
+
+
+dt=pickTime("../../resultDatas/20220829-850-re11h-SMF28E/regenerationTR.csv", "../../resultDatas/20220829-850-re11h-SMF28E/RFBGTemp.csv")
+dt.to_csv("../../resultDatas/20220829-850-re11h-SMF28E/rfbgTempTR.csv")
 
 
 # wlDt = pd.DataFrame(columns=['time', 'ctwl'])

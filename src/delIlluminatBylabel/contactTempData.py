@@ -16,7 +16,7 @@ def pickTime(file1, file2):
     tempTime = list(df2['time'])
     time2 = [time.mktime(time.strptime(i,"%Y/%m/%d %H:%M:%S")) for i in tempTime]
     temperatureDatas = list(df2['temperature'])
-    ctwlDatas = list(df1['ctwl'])
+    ctwlDatas = list(df1['ctwl/nm'])
     # print('time1: ', time1[0])
     # print(time2[627])
     # print(time2[628])
@@ -35,10 +35,10 @@ def pickTime(file1, file2):
             wavelengths.append(ctwlDatas[i])
             timeDatas.append(rfbgTime[i])
 
-    df = pd.DataFrame(columns=['time', 'temperature', 'ctwl'])
+    df = pd.DataFrame(columns=['time', 'temperature', 'ctwl/nm'])
     df["time"] = timeDatas
     df["temperature"] = tempDatas
-    df["ctwl"] = wavelengths
+    df["ctwl/nm"] = wavelengths
 
     return df
 
